@@ -188,6 +188,7 @@
     <Compile Include="Controllers\Api\GigsController.cs" />
     <Compile Include="Controllers\Api\NotificationsController.cs" />
     <Compile Include="Controllers\FolloweesController.cs" />
+    <Compile Include="ViewModels\GigDetailViewModel.cs" />
     <Compile Include="Controllers\GigsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
