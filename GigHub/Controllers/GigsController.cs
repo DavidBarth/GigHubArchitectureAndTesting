@@ -17,6 +17,40 @@ namespace GigHub.Controllers
             _context = new ApplicationDbContext();    
         }
 
+        /// <summary>
+        /// gets gig associated to user
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>view with model</returns>
+        
+        public ActionResult Details(int id)
+        {
+            
+            var gig = _context.Gigs
+                .Include(g => g.Artist)
+                .Include(g => g.Genre)
+                .Single(g => g.Id == id);
+
+            if (gig == null)
+                return HttpNotFound();
+
+            var gigDetailViewModel = new GigDetailViewModel { Gig = gig };
+
+            //if user is authenticated do extra work check wether user attends gig and follows artist of gig
+            if (User.Identity.IsAuthenticated)
+            {
+                var userId = User.Identity.GetUserId();
+
+                gigDetailViewModel.IsAttending = _context.Attendances
+                    .Any(a => a.GigId == gig.Id && a.AttendeeId == userId);
+
+                gigDetailViewModel.IsFollowing = _context.Followings
+                    .Any(f => f.FolloweeId == gig.ArtistId && f.FollowerId == userId);
+            }
+
+            return View("Details", gigDetailViewModel);
+        }
+
         [Authorize]
         public ActionResult Mine()
         {
