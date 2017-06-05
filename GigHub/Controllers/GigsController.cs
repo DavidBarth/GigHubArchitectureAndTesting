@@ -77,11 +77,20 @@ namespace GigHub.Controllers
                 .Include(g => g.Genre)
                 .ToList();
 
+            //FOR THE MOMENT VIOLATING THE DRY PRINCIPLE...solution later
+            //loading attendances to be able to initialize GigsViewModel
+            //otherwise we'll get null reference error
+            var attendances = _context.Attendances
+                .Where(a => a.AttendeeId == userId && a.Gig.DateTime > DateTime.Now)
+                .ToList()  //execute query
+                .ToLookup(a => a.GigId); //extension method converts list to Lookup DS to be able to quickly lookup attendaces by id
+
             var viewModel = new GigsViewModel()
             {
                 UpcomingGigs = gigs,
                 ShowActions = User.Identity.IsAuthenticated,
-                Heading = "Gigs I'm Attending"
+                Heading = "Gigs I'm Attending",
+                Attendances = attendances
             };
 
             return View("Gigs", viewModel);
